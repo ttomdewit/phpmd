@@ -493,6 +493,9 @@ abstract class AbstractTestCase extends AbstractStaticTestCase
             ->method('getFileName')
             ->willReturn($fileName);
         $ruleViolation
+            ->method('getBaseName')
+            ->willReturn($fileName);
+        $ruleViolation
             ->method('getBeginLine')
             ->willReturn($beginLine);
         $ruleViolation
