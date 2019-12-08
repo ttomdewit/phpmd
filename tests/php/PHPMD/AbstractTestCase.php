@@ -471,7 +471,8 @@ abstract class AbstractTestCase extends AbstractStaticTestCase
         int $beginLine = 23,
         int $endLine = 42,
         ?object $rule = null,
-        ?string $description = null
+        ?string $description = null,
+        string $baseName = 'bar.php'
     ) {
         $ruleViolation = $this->getMockBuilder(RuleViolation::class)
             ->setConstructorArgs(
@@ -494,7 +495,7 @@ abstract class AbstractTestCase extends AbstractStaticTestCase
             ->willReturn($fileName);
         $ruleViolation
             ->method('getBaseName')
-            ->willReturn($fileName);
+            ->willReturn($baseName);
         $ruleViolation
             ->method('getBeginLine')
             ->willReturn($beginLine);

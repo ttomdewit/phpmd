@@ -113,24 +113,21 @@ class RuleViolation
 
     /**
      * Returns the base name where this rule violation was detected.
-     *
-     * @return string
      */
-    public function getBaseName()
+    public function getBaseName(): string
     {
-        $cwd = explode(DIRECTORY_SEPARATOR, getcwd());
-        $path = explode(DIRECTORY_SEPARATOR, realpath($this->getFileName()));
+        $cwd = explode(DIRECTORY_SEPARATOR, (string) getcwd());
+        $path = explode(DIRECTORY_SEPARATOR, (string) realpath((string) $this->getFileName()));
 
         foreach ($cwd as $index => $directory) {
             if ($directory !== $path[$index]) {
                 break;
             }
 
-            unset($path[$index]);
-            unset($cwd[$index]);
+            unset($path[$index], $cwd[$index]);
         }
 
-        return str_repeat('../', count($cwd)).implode('/', $path);
+        return str_repeat('../', count($cwd)) . implode('/', $path);
     }
 
     /**
