@@ -171,7 +171,7 @@ class CommandLineOptions
         $this->cacheStrategy = ResultCacheStrategy::from($this->readString($input, 'cache-strategy') ?? 'content');
         $this->ignoreErrorsOnExit = (bool) $input->getOption('ignore-errors-on-exit');
         $this->ignoreViolationsOnExit = (bool) $input->getOption('ignore-violations-on-exit');
-        foreach (['checkstyle', 'github', 'gitlab', 'html', 'json', 'sarif', 'text', 'xml'] as $type) {
+        foreach (['checkstyle', 'github', 'githubcheckruns', 'gitlab', 'html', 'json', 'sarif', 'text', 'xml'] as $type) {
             $value = $this->readString($input, 'reportfile-' . $type);
             if ($value) {
                 $this->reportFiles[$type] = $value;

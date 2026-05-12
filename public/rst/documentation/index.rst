@@ -96,6 +96,8 @@ Command line options
   - ``--color`` - enable color in output, for instance text renderer
     will show rule name in yellow and error description in red.
 
+  - ``--xdebug`` - will enable Xdebug for debugging PHP Mess Detector.
+
   An example command line: ::
 
     phpmd PHP/Depend/DbusUI xml codesize --reportfile phpmd.xml --suffixes php,phtml
@@ -176,6 +178,7 @@ At the moment PHPMD comes with the following renderers:
 - *json*, formats JSON report.
 - *gitlab*, a format that GitLab CI understands.
 - *github*, a format that GitHub Actions understands (see `CI Integration </documentation/ci-integration.html#github-actions>`_).
+- *githubcheckruns*, JSON format for the `GitHub Check Runs API <https://docs.github.com/en/rest/checks/runs#create-a-check-run>`_.
 
 Some more formats can be obtained by conversion such as:
 

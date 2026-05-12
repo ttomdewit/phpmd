@@ -30,6 +30,7 @@ use PHPMD\Cache\ResultCacheKeyFactory;
 use PHPMD\Cache\ResultCacheStateFactory;
 use PHPMD\PHPMD;
 use PHPMD\ProgressListener;
+use PHPMD\Renderer\GitHubRenderer;
 use PHPMD\Renderer\RendererFactory;
 use PHPMD\Report;
 use PHPMD\Rule;
@@ -213,6 +214,12 @@ final class Command extends SymfonyCommand
             'Write report to a checkstyle file'
         );
         $this->addOption('reportfile-github', null, InputOption::VALUE_REQUIRED, 'Write report to a GitHub file');
+        $this->addOption(
+            'reportfile-githubcheckruns',
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Write report to a GitHub Check Runs file'
+        );
         $this->addOption('reportfile-gitlab', null, InputOption::VALUE_REQUIRED, 'Write report to a GitLab file');
         $this->addOption('reportfile-html', null, InputOption::VALUE_REQUIRED, 'Write report to a html file');
         $this->addOption('reportfile-json', null, InputOption::VALUE_REQUIRED, 'Write report to a json file');
@@ -290,6 +297,15 @@ final class Command extends SymfonyCommand
             $reportRenderer->setWriter(new StreamOutput($stream));
 
             $renderers[] = $reportRenderer;
+        }
+
+        // Auto-detect GitHub Actions and add annotation output
+        $hasGitHubRenderer = $renderer instanceof GitHubRenderer
+            || isset($options->getReportFiles()['github']);
+        if (getenv('GITHUB_ACTIONS') === 'true' && !$hasGitHubRenderer) {
+            $githubRenderer = new GitHubRenderer();
+            $githubRenderer->setWriter(new StreamOutput(STDERR));
+            $renderers[] = $githubRenderer;
         }
 
         // Configure baseline violations

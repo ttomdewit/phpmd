@@ -25,6 +25,7 @@ final class RendererFactory
             'ansi' => new AnsiRenderer(),
             'checkstyle' => new CheckStyleRenderer(),
             'github' => new GitHubRenderer(),
+            'githubcheckruns' => new GitHubCheckRunsRenderer(),
             'gitlab' => new GitLabRenderer(),
             'html' => new HTMLRenderer(2),
             'json' => new JSONRenderer(),

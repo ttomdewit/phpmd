@@ -1,0 +1,19 @@
+{
+    "name": "Fifth Test RuleSet",
+    "description": "define some rules and (try to) change properties without excluding them first",
+    "rules": [
+        {"ref": "rulesets/set3.xml"},
+        {
+            "name": "RuleOneInThirdRuleSet",
+            "properties": {"test1": "42"}
+        },
+        {
+            "name": "RuleTwoInThirdRuleSet",
+            "properties": {"test2": "NA"}
+        },
+        {
+            "name": "RuleThreeInThirdRuleSet",
+            "properties": {"test": "NA"}
+        }
+    ]
+}

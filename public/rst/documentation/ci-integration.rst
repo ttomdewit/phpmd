@@ -34,6 +34,34 @@ A simple GitHub Actions workflow could look like this: ::
 
 This assumes that you have a `custom rule set </documentation/creating-a-ruleset.html>`_ in the file ``phpmd.ruleset.xml``. Alternatively, you can of course list the rule sets manually.
 
+Auto-detection
+--------------
+
+When PHPMD detects it is running inside GitHub Actions (via the ``GITHUB_ACTIONS`` environment variable), it will automatically add the ``github`` renderer output to stderr. This means you get inline annotations on your pull requests without needing to specify the ``github`` format explicitly.
+
+For example, this workflow uses ``text`` as the primary format but still gets GitHub annotations automatically: ::
+
+  - name: Run PHPMD
+    run: phpmd . text phpmd.ruleset.xml --exclude 'tests/*,vendor/*'
+
+GitHub Check Runs
+-----------------
+
+For richer integration with the GitHub Checks API, PHPMD provides the ``githubcheckruns`` renderer. This outputs JSON structured for the `Check Runs API <https://docs.github.com/en/rest/checks/runs#create-a-check-run>`_, which allows you to create proper check runs with summaries, file-level annotations, and priority-based severity levels.
+
+Usage: ::
+
+  phpmd . githubcheckruns phpmd.ruleset.xml --exclude 'tests/*,vendor/*' > checkrun.json
+
+The JSON output includes:
+
+- A title and summary of the analysis
+- Annotations grouped by file with start/end lines
+- Severity levels mapped from PHPMD rule priorities (1=failure, 2-3=warning, 4-5=notice)
+- Detailed rule metadata (rule set, external info URL, priority)
+
+This output can then be used with the GitHub API or third-party tools to create Check Runs on your repository.
+
 GitLab Code Quality Reporting
 =========
 
@@ -49,4 +77,3 @@ A simple GitLab Code Quality report workflow could look like this: ::
       artifacts:
         reports:
           codequality: phpmd-report.json
-
