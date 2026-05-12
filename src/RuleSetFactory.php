@@ -324,6 +324,20 @@ class RuleSetFactory
      */
     private function parseSingleRuleNode(RuleSet $ruleSet, array|ArrayAccess|SimpleXMLElement $ruleNode): void
     {
+        $className = '';
+        if (isset($ruleNode['class'])) {
+            $value = $ruleNode['class'];
+            if (is_string($value) || $value instanceof Stringable) {
+                $className = (string) $value;
+            }
+        }
+
+        if ($className === '' && !isset($ruleNode['file'])) {
+            $this->modifyExistingRuleset($ruleSet, $ruleNode);
+
+            return;
+        }
+
         $fileName = '';
 
         $ruleSetFolderPath = dirname($ruleSet->getFileName());
@@ -341,7 +355,9 @@ class RuleSetFactory
             }
         }
 
-        $className = $ruleNode['class'] ?? ($fileName === '' ? '' : pathinfo($fileName, PATHINFO_FILENAME));
+        if ($className === '') {
+            $className = $ruleNode['class'] ?? ($fileName === '' ? '' : pathinfo($fileName, PATHINFO_FILENAME));
+        }
         if ((!$className instanceof Stringable) && !is_string($className)) {
             throw new RuntimeException('Invalid class');
         }
@@ -483,6 +499,25 @@ class RuleSetFactory
                     $this->parsePropertiesNode($rule, $node);
                 }
             }
+        }
+    }
+
+    /**
+     * Modify an existing rule in the ruleset by name.
+     *
+     * @param array<mixed>|ArrayAccess<string, mixed>|SimpleXMLElement $ruleNode
+     * @throws RuntimeException
+     */
+    private function modifyExistingRuleset(RuleSet $ruleSet, array|ArrayAccess|SimpleXMLElement $ruleNode): void
+    {
+        $name = $ruleNode['name'] ?? null;
+        $ruleName = is_string($name) || $name instanceof Stringable ? (string) $name : '';
+
+        try {
+            $rule = $ruleSet->getRuleByName($ruleName);
+            $this->parseRuleProperties($rule, $ruleNode);
+        } catch (RuleByNameNotFoundException $exception) {
+            return;
         }
     }
 
@@ -682,7 +717,7 @@ class RuleSetFactory
      */
     private function getConfigFromJsonFile(string $fileName): RuleSet
     {
-        $config = json_decode(file_get_contents($fileName) ?: '');
+        $config = json_decode(file_get_contents($fileName) ?: '', true);
         if (!is_array($config)) {
             throw new RuntimeException('Invalid config');
         }

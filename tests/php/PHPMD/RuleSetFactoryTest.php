@@ -28,6 +28,7 @@ use PHPMD\Rule\CyclomaticComplexity;
 use PHPMD\Rule\Naming\ShortMethodName;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use ReflectionProperty;
 use RuntimeException;
 
 /**
@@ -536,6 +537,80 @@ class RuleSetFactoryTest extends AbstractTestCase
         }
         static::assertSame(0, $runtimeExceptionCount);
         static::assertSame(5, $ruleSetNotFoundExceptionCount);
+    }
+
+    /**
+     * Check if rule properties are changed by name only without having to exclude a rule first
+     */
+    #[DataProvider('ruleOverwriteFormats')]
+    public function testCreateRuleSetsWithoutRuleReferenceThatOverwritesSettings(string $ruleSet): void
+    {
+        self::changeWorkingDirectory();
+
+        $expected = [
+            'RuleOneInThirdRuleSet' => [
+                'test1' => '42',
+            ],
+            'RuleTwoInThirdRuleSet' => [
+                'test1' => 'g',
+                'test2' => 'NA',
+            ],
+            'RuleThreeInThirdRuleSet' => [
+                'test' => 'NA',
+            ],
+        ];
+
+        $factory = new RuleSetFactory();
+        $ruleSets = $factory->createRuleSets([$ruleSet]);
+
+        $actual = [];
+
+        foreach ($ruleSets[0] as $rule) {
+            $name = $rule->getName();
+            $reflection = new ReflectionProperty(AbstractRule::class, 'properties');
+            $actual[$name] = $reflection->getValue($rule);
+        }
+
+        static::assertSame($expected, $actual);
+    }
+
+    /**
+     * Check if properties are changed, but no additional properties are added to rules
+     */
+    #[DataProvider('ruleOverwriteFormats')]
+    public function testCreateRuleSetsWithoutRuleReferenceThatOverwritesSettingsButDoesntAddProperties(string $ruleSet): void
+    {
+        self::changeWorkingDirectory();
+
+        $expectedRules = [
+            '--default--',
+            '--default--',
+            'NA',
+        ];
+
+        $factory = new RuleSetFactory();
+        $ruleSets = $factory->createRuleSets([$ruleSet]);
+        $actualRules = [];
+
+        foreach ($ruleSets[0] as $rule) {
+            $actualRules[] = $rule->getStringProperty('test', '--default--');
+        }
+
+        static::assertSame($expectedRules, $actualRules);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function ruleOverwriteFormats(): array
+    {
+        $dir = __DIR__ . '/../../resources/files/rulesets/';
+
+        return [
+            'xml' => ['refset5'],
+            'yaml' => [$dir . 'refset5.yml'],
+            'json' => [$dir . 'refset5.json'],
+        ];
     }
 
     /**

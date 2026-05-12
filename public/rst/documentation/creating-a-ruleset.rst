@@ -209,26 +209,6 @@ __ /rules/cleancode.html
           My custom rule set that checks my code...
       </description>
 
-      <!-- Import the entire unused code rule set -->
-      <rule ref="rulesets/unusedcode.xml" />
-
-      <!--
-          Import the entire cyclomatic complexity rule and
-          customize the rule configuration.
-      -->
-      <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
-          <priority>1</priority>
-          <properties>
-              <property name="reportLevel" value="5" />
-          </properties>
-      </rule>
-
-      <!-- Import entire naming rule set and exclude rules -->
-      <rule ref="rulesets/naming.xml">
-          <exclude name="ShortVariable" />
-          <exclude name="LongVariable" />
-      </rule>
-
       <!-- Import entire clean code rule set, modify StaticAccess rule -->
       <rule ref="rulesets/cleancode.xml">
           <exclude name="StaticAccess" />
@@ -242,6 +222,56 @@ __ /rules/cleancode.html
                     \DateTimeZone
                   </value>
               </property>
+          </properties>
+      </rule>
+  </ruleset>
+
+This approach is also required when you need to change other aspects of a rule
+beyond properties, such as its ``<priority>``.
+
+Overwriting properties without excluding
+========================================
+
+When you only need to change properties and are modifying multiple rules,
+you can use a simpler syntax. After importing a rule set, add ``<rule>``
+elements with just a ``name`` attribute and the properties to override.
+This avoids having to exclude and re-include each rule individually.
+
+::
+
+  <?xml version="1.0"?>
+  <ruleset name="My first PHPMD rule set"
+           xmlns="https://phpmd.org/xml/ruleset/1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="https://phpmd.org/xml/ruleset/1.0.0
+                       http://phpmd.org/xml/ruleset_xml_schema_1.0.0.xsd"
+           xsi:noNamespaceSchemaLocation="
+                       http://phpmd.org/xml/ruleset_xml_schema_1.0.0.xsd">
+      <description>
+          My custom rule set that checks my code...
+      </description>
+
+      <!--
+          Import the entire codesize ruleset and
+          customize the configuration for some rules.
+      -->
+      <rule ref="rulesets/codesize.xml" />
+
+      <rule name="ExcessiveParameterList">
+          <properties>
+              <property name="minimum" value="15" />
+          </properties>
+      </rule>
+
+      <rule name="TooManyFields">
+          <properties>
+              <property name="maxfields" value="35" />
+          </properties>
+      </rule>
+
+      <rule name="TooManyMethods">
+          <properties>
+              <property name="maxmethods" value="35" />
           </properties>
       </rule>
   </ruleset>
