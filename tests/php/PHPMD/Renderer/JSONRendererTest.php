@@ -36,7 +36,7 @@ class JSONRendererTest extends AbstractTestCase
 
         $violations = [
             $this->getRuleViolationMock('/bar.php'),
-            $this->getRuleViolationMock('/foo.php', 23, 42, null, null, 'foo.php'),
+            $this->getRuleViolationMock('/foo.php'),
             $this->getRuleViolationMock('/bar.php'), // TODO Set with description "foo <?php bar".
         ];
 

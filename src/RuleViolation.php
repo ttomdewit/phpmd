@@ -112,25 +112,6 @@ class RuleViolation
     }
 
     /**
-     * Returns the base name where this rule violation was detected.
-     */
-    public function getBaseName(): string
-    {
-        $cwd = explode(DIRECTORY_SEPARATOR, (string) getcwd());
-        $path = explode(DIRECTORY_SEPARATOR, (string) realpath((string) $this->getFileName()));
-
-        foreach ($cwd as $index => $directory) {
-            if ($directory !== $path[$index]) {
-                break;
-            }
-
-            unset($path[$index], $cwd[$index]);
-        }
-
-        return str_repeat('../', count($cwd)) . implode('/', $path);
-    }
-
-    /**
      * Returns the first line of the node that causes this rule violation.
      */
     public function getBeginLine(): int
